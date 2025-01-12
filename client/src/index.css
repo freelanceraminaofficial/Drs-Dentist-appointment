@@ -1,0 +1,16 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Custom CSS */
+@layer utilities {
+  .group-container {
+    background-image: url("https://i.ibb.co/qsMd8YZ/landing-bg.png");
+    background-size: cover;
+    padding: 160px;
+    height: 90vh;
+    margin-left: 200px;
+    background-repeat: no-repeat;
+    background-position: top left;
+  }
+}
