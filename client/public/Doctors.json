@@ -1,30 +1,176 @@
-
 [
   {
-    "name": "Karyen Anderson",
+    "id": 1,
+    "name": "Dr. Olivia Green",
+    "specialty": "MBBS, MD - Pediatrics",
     "image": "https://i.ibb.co.com/3FS45zf/Rectangle-15.png",
-    "title": "BTP - Senior Physiotherapist",
-    "starRating": 3.5,
-    "location": "Aspen, Colorado",
-    "availableOn": "2025-01-15",
-    "price": "$25"
-  },
-  {
-    "name": "Karyen Anderson",
-    "image": "https://i.ibb.co.com/ZGpZQ2V/Rectangle-15-1.png",
-    "title": "BTP - Senior Physiotherapist",
-    "starRating": 5.0,
-    "location": "Malibu, California",
+    "title": "Senior Pediatrician",
+    "starRating": 4.8,
     "availableOn": "2025-01-20",
-    "price": "$80"
+    "price": "$40",
+    "location": "New York, NY, USA",
+    "about": "Dr. Olivia Green is a renowned pediatrician with 12 years of experience in ensuring the health and wellbeing of children. Her dedication to her young patients has earned her great acclaim.",
+    "education": [
+      "NYU School of Medicine - MBBS - 2005 - 2009",
+      "Columbia University - MD - 2010 - 2013"
+    ],
+    "experience": [
+      "New York Children's Hospital - 2014 - Present",
+      "Brooklyn Pediatrics - 2010 - 2014"
+    ],
+    "services": [
+      "Vaccinations",
+      "Well-Baby Checkups",
+      "Developmental Screenings"
+    ],
+    "awards": [
+      "Best Pediatrician Award (2021)",
+      "Caring Hands Recognition (2018)"
+    ],
+    "specializations": [
+      "Child Health",
+      "Vaccinations",
+      "Developmental Disorders"
+    ],
+    "locations": [
+      {
+        "name": "NY Children's Hospital",
+        "address": "123 Park Avenue, NY, NY",
+        "hours": "8:00 AM - 4:00 PM"
+      },
+      {
+        "name": "Brooklyn Pediatrics",
+        "address": "456 Ocean Drive, Brooklyn, NY",
+        "hours": "9:00 AM - 3:00 PM"
+      }
+    ],
+    "reviews": [
+      {
+        "name": "Emma Johnson",
+        "comment": "Dr. Green is wonderful with kids and very thorough.",
+        "rating": 5
+      },
+      {
+        "name": "Michael Brown",
+        "comment": "Very knowledgeable and caring.",
+        "rating": 4.5
+      }
+    ],
+    "hours": [
+      { "day": "Monday", "open": "8:00 AM", "close": "4:00 PM" },
+      { "day": "Wednesday", "open": "9:00 AM", "close": "3:00 PM" },
+      { "day": "Friday", "open": "8:00 AM", "close": "4:00 PM" }
+    ]
   },
   {
-    "name": "Karyen Anderson",
+    "id": 2,
+    "name": "Dr. Michael Brown",
+    "specialty": "DDS, MDS - Orthodontics",
+    "image": "https://i.ibb.co.com/ZGpZQ2V/Rectangle-15-1.png",
+    "title": "Senior Orthodontist",
+    "starRating": 4.7,
+    "availableOn": "2025-01-25",
+    "price": "$50",
+    "location": "Los Angeles, CA, USA",
+    "about": "Dr. Michael Brown is an expert orthodontist who has been transforming smiles for over a decade. His passion for patient care and aesthetic dentistry sets him apart.",
+    "education": [
+      "UCLA School of Dentistry - DDS - 2006 - 2010",
+      "University of Southern California - MDS - 2011 - 2013"
+    ],
+    "experience": [
+      "LA Orthodontic Center - 2014 - Present",
+      "Beverly Hills Smile Studio - 2013 - 2014"
+    ],
+    "services": ["Braces", "Invisalign", "Teeth Whitening", "Jaw Alignment"],
+    "awards": ["Top Orthodontist Award (2020)", "Best Smile Designer (2019)"],
+    "specializations": ["Braces", "Cosmetic Dentistry", "TMJ Disorders"],
+    "locations": [
+      {
+        "name": "LA Orthodontic Center",
+        "address": "123 Hollywood Blvd, LA, CA",
+        "hours": "9:00 AM - 5:00 PM"
+      },
+      {
+        "name": "Beverly Hills Smile Studio",
+        "address": "456 Sunset Blvd, Beverly Hills, CA",
+        "hours": "10:00 AM - 4:00 PM"
+      }
+    ],
+    "reviews": [
+      {
+        "name": "Sophia Lee",
+        "comment": "Dr. Brown gave me the perfect smile!",
+        "rating": 5
+      },
+      {
+        "name": "James Carter",
+        "comment": "Very professional and friendly.",
+        "rating": 4.5
+      }
+    ],
+    "hours": [
+      { "day": "Tuesday", "open": "9:00 AM", "close": "5:00 PM" },
+      { "day": "Thursday", "open": "10:00 AM", "close": "4:00 PM" },
+      { "day": "Saturday", "open": "8:00 AM", "close": "2:00 PM" }
+    ]
+  },
+  {
+    "id": 3,
+    "name": "Dr. Sophia White",
+    "specialty": "MBBS, MD - Dermatology",
     "image": "https://i.ibb.co.com/0VLzPDR/Rectangle-15-2.png",
-    "title": "BTP - Senior Physiotherapist",
-    "starRating": 4.5,
-    "location": "New York, New York",
-    "availableOn": "2025-01-10",
-    "price": "$30"
+    "title": "Dermatology Specialist",
+    "starRating": 4.9,
+    "availableOn": "2025-01-30",
+    "price": "$60",
+    "location": "Miami, FL, USA",
+    "about": "Dr. Sophia White is a leading dermatologist specializing in skin health and cosmetic treatments. Her focus on personalized care ensures the best results for her patients.",
+    "education": [
+      "University of Miami - MBBS - 2007 - 2011",
+      "Johns Hopkins University - MD - 2012 - 2015"
+    ],
+    "experience": [
+      "Miami Skin Center - 2016 - Present",
+      "Florida Dermatology Clinic - 2015 - 2016"
+    ],
+    "services": ["Acne Treatment", "Laser Therapy", "Skin Rejuvenation"],
+    "awards": [
+      "Best Dermatologist in Florida (2021)",
+      "Innovator in Skin Care (2020)"
+    ],
+    "specializations": [
+      "Cosmetic Dermatology",
+      "Skin Cancer Treatment",
+      "Laser Surgery"
+    ],
+    "locations": [
+      {
+        "name": "Miami Skin Center",
+        "address": "123 Ocean Drive, Miami, FL",
+        "hours": "8:00 AM - 6:00 PM"
+      },
+      {
+        "name": "Florida Dermatology Clinic",
+        "address": "456 Palm Avenue, Miami, FL",
+        "hours": "9:00 AM - 5:00 PM"
+      }
+    ],
+    "reviews": [
+      {
+        "name": "Lisa Roberts",
+        "comment": "Dr. White is amazing! My skin has never been better.",
+        "rating": 5
+      },
+      {
+        "name": "Andrew Wilson",
+        "comment": "Very skilled and professional.",
+        "rating": 4.8
+      }
+    ],
+    "hours": [
+      { "day": "Monday", "open": "8:00 AM", "close": "6:00 PM" },
+      { "day": "Wednesday", "open": "9:00 AM", "close": "5:00 PM" },
+      { "day": "Friday", "open": "8:00 AM", "close": "4:00 PM" }
+    ]
   }
 ]

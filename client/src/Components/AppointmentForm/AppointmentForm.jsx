@@ -83,7 +83,7 @@ const AppointmentForm = () => {
 
   return (
     <div className="flex flex-col items-center ">
-      <MyCalendar dispatch={dispatch} />
+      <MyCalendar selectedDate={state.selectedDate} dispatch={dispatch} />
 
       <button
         className="bg-teal-600 text-white py-2 px-4 rounded-full hover:bg-teal-700"

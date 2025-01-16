@@ -1,17 +1,26 @@
 import React, { useState } from "react";
-import { Outlet } from "react-router-dom";
+import { Outlet, Link } from "react-router-dom";
+import CustomCalendar from "../Components/CustomCalendar/CustomCalendar";
+import useAdmin from "../hooks/useAdmin";
 
 const Dashboard = () => {
   // State to track the selected menu item
   const [selectedMenu, setSelectedMenu] = useState(null);
-
+  const [isAdmin] = useAdmin();
   // Menu items
-  const menuItems = [
-    { id: 1, name: "Home", link: "#" },
-    { id: 2, name: "Profile", link: "#" },
-    { id: 3, name: "Settings", link: "#" },
-    { id: 4, name: "Reports", link: "#" },
-  ];
+  const menuItems = isAdmin
+    ? [
+        { id: 5, name: "All Users", link: "/admin/users" }, // Admin route
+        { id: 6, name: "Add Doctors", link: "/admin/add-doctor" }, // Admin route
+        { id: 7, name: "Manage Doctors", link: "/admin/manage-doctors" }, // Admin route
+        { id: 4, name: "Home", link: "/" },
+      ]
+    : [
+        { id: 1, name: "My Appointments", link: "/dashboard" },
+        { id: 3, name: "My History", link: "/history" },
+        { id: 2, name: "My Reviews", link: "/reviews" },
+        { id: 4, name: "Home", link: "/" },
+      ];
 
   // Handle menu item click
   const handleMenuClick = (id) => {
@@ -30,14 +39,20 @@ const Dashboard = () => {
             {menuItems.map((item) => (
               <li
                 key={item.id}
-                onClick={() => handleMenuClick(item.id)}
                 className={`mb-2 p-3 rounded cursor-pointer ${
                   selectedMenu === item.id
                     ? "bg-gray-700"
                     : "hover:bg-gray-700 transition-colors"
                 }`}
               >
-                {item.name}
+                {/* Use React Router's Link for navigation */}
+                <Link
+                  to={item.link}
+                  onClick={() => handleMenuClick(item.id)}
+                  className="block"
+                >
+                  {item.name}
+                </Link>
               </li>
             ))}
           </ul>
@@ -52,6 +67,8 @@ const Dashboard = () => {
         <h2 className="text-3xl font-semibold mb-6">
           Welcome to the Dashboard
         </h2>
+        <CustomCalendar></CustomCalendar>
+
         <div className="text-gray-700">
           <Outlet></Outlet>
         </div>

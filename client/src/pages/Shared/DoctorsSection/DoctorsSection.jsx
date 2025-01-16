@@ -4,14 +4,23 @@ import "@smastrom/react-rating/style.css";
 import { GrLocation } from "react-icons/gr";
 import { MdDateRange } from "react-icons/md";
 import { MdOutlineMonetizationOn } from "react-icons/md";
+import { useNavigate } from "react-router-dom";
 
 const myStyles = {
   itemShapes: RoundedStar,
   activeFillColor: "#F7A582",
   inactiveFillColor: "#fbf1a9",
 };
+
 const DoctorsSection = ({ item }) => {
-  const { name, image, title, starRating, location, availableOn, price } = item;
+  const { name, image, title, starRating, location, availableOn, price, id } =
+    item;
+
+  const navigate = useNavigate();
+
+  const handleViewProfile = (id) => {
+    navigate(`/doctor/${id}`); // Navigate to the doctor's profile page using the ID
+  };
 
   return (
     <div className="p-8 border rounded-lg hover:shadow-lg transition-shadow">
@@ -25,9 +34,9 @@ const DoctorsSection = ({ item }) => {
       <p className="text-yellow-500 mt-1 pb-6">
         <Rating
           style={{ maxWidth: 180 }}
-          value={starRating} // Pass the star rating value
-          readOnly // Make the rating read-only
-          itemStyles={myStyles} // Custom styles for rating stars
+          value={starRating}
+          readOnly
+          itemStyles={myStyles}
         />
       </p>
       <hr className="p-2" />
@@ -45,7 +54,10 @@ const DoctorsSection = ({ item }) => {
         <MdOutlineMonetizationOn className="text-black text-xl mt-1" />
         <p className="mb-2 font-bold text-gray-400 mt-0.5">{price}</p>
       </div>
-      <button className="w-full text-[#F7A582] border border-[#F7A582] hover:bg-[#F7A582] hover:text-white rounded-md p-4 transition-all duration-300 ease-in-out">
+      <button
+        className="w-full text-[#F7A582] border border-[#F7A582] hover:bg-[#F7A582] hover:text-white rounded-md p-4 transition-all duration-300 ease-in-out"
+        onClick={() => handleViewProfile(id)} // Passing the doctor’s ID to navigate
+      >
         View Profile
       </button>
     </div>
