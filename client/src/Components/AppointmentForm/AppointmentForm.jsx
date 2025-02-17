@@ -1,10 +1,11 @@
 import React, { useReducer } from "react";
 import { useForm } from "react-hook-form";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import useAxiosSecure from "../../hooks/useAxiosSecure";
 import MyCalendar from "../DateSelection/MyCalendar";
 import BookingModal from "../Modal/BookingModal";
 import Swal from "sweetalert2";
+import useAxiosSecure from "../../hooks/useAxiosSecure";
+import useAuth from "../../hooks/useAuth";
 
 const initialState = {
   isModalOpen: false,
@@ -31,6 +32,8 @@ const reducer = (state, action) => {
 const AppointmentForm = () => {
   const axiosSecure = useAxiosSecure();
   const [state, dispatch] = useReducer(reducer, initialState);
+  const { user } = useAuth(); // Replace with your authentication method
+  const userEmail = user?.email;
 
   const {
     register,
@@ -41,16 +44,22 @@ const AppointmentForm = () => {
 
   const mutation = useMutation({
     mutationFn: async (formData) => {
+      if (!userEmail) {
+        Swal.fire({
+          icon: "error",
+          title: "Login Required",
+          text: "Please log in before booking an appointment.",
+        });
+        throw new Error("User is not logged in.");
+      }
+
+      // Enforce logged-in email for booking
+      formData.email = userEmail;
+
       const response = await axiosSecure.post("/appointments", formData);
       return response.data;
     },
-    onMutate: () => {
-      dispatch({ type: "SET_LOADING", payload: true });
-    },
     onSuccess: () => {
-      dispatch({ type: "SET_LOADING", payload: false });
-
-      // Using Swal with specified options
       Swal.fire({
         position: "top-end",
         icon: "success",
@@ -59,16 +68,16 @@ const AppointmentForm = () => {
         timer: 1500,
       });
 
-      // Perform additional actions after the success notification
       dispatch({ type: "CLOSE_MODAL" });
       dispatch({ type: "RESET_DATE" });
       reset();
     },
-
     onError: (error) => {
-      dispatch({ type: "SET_LOADING", payload: false });
-      console.error("Error during mutation:", error);
-      alert(error.response?.data?.message || "Failed to submit data");
+      Swal.fire({
+        icon: "error",
+        title: "Booking Failed",
+        text: error.response?.data?.message || "Something went wrong!",
+      });
     },
   });
 
@@ -100,6 +109,7 @@ const AppointmentForm = () => {
           onSubmit={onSubmit}
           register={register}
           errors={errors}
+          userEmail={userEmail}
         />
       )}
     </div>

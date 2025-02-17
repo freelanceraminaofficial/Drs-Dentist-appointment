@@ -1,76 +1,101 @@
-import React, { createContext, useEffect, useState } from "react";
+import React, { createContext, useContext, useEffect, useState } from "react";
+import {
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  signOut,
+  onAuthStateChanged,
+  updateProfile,
+  getAuth,
+  signInWithPopup,
+  GoogleAuthProvider,
+} from "firebase/auth";
+import { app } from "../firebase/firebase.config";
 import useAxiosPublic from "../hooks/useAxiosPublic";
 
-// Create the AuthContext
+// Create a context for authentication
 export const AuthContext = createContext(null);
+const auth = getAuth(app);
 
 const AuthProviders = ({ children }) => {
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState(null); // Store user info
   const [loading, setLoading] = useState(true);
-  const axiosSecure = useAxiosPublic();
+  const googleProvider = new GoogleAuthProvider();
+  const axiosPublic = useAxiosPublic();
 
-  const saveToken = (token) => localStorage.setItem("access-token", token);
-  const removeToken = () => localStorage.removeItem("access-token");
+  // Firebase Authentication Methods
 
-  // Logout user
-  const logOut = async () => {
+  const createUser = (email, password) => {
     setLoading(true);
-    try {
-      await axiosSecure.post("/api/auth/logout");
-      removeToken();
-      setUser(null);
-      console.log("User logged out successfully");
-    } catch (error) {
-      console.error("Logout error:", error);
-      // Optionally show a toast or alert to inform the user of the error.
-    } finally {
-      setLoading(false);
-    }
+    return createUserWithEmailAndPassword(auth, email, password);
   };
 
-  // Check user authentication status on component mount
+  const signIn = (email, password) => {
+    setLoading(true);
+    return signInWithEmailAndPassword(auth, email, password);
+  };
+
+  const googleSignIn = () => {
+    setLoading(true);
+    return signInWithPopup(auth, googleProvider);
+  };
+
+  const logOut = () => {
+    setLoading(true);
+    return signOut(auth);
+  };
+
+  // Update user profile with name and photoURL
+  const updateUserProfile = async (name, photoURL) => {
+    await updateProfile(auth.currentUser, {
+      displayName: name,
+      photoURL: photoURL,
+    });
+
+    const updatedUser = auth.currentUser;
+    setUser({
+      ...updatedUser,
+      username: updatedUser.displayName,
+      photoURL: updatedUser.photoURL,
+    });
+  };
+
+  // Use effect to listen for authentication changes and update user state
   useEffect(() => {
-    const checkUser = async () => {
-      setLoading(true);
-      try {
-        const response = await axiosSecure.get("/api/auth/status");
-        const userData = response.data.user;
-
-        if (userData?.id) {
-          const tokenResponse = await axiosSecure.post("/jwt", {
-            id: userData.id,
-          });
-          if (tokenResponse.data.token) {
-            saveToken(tokenResponse.data.token);
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      setUser(currentUser);
+      if (currentUser) {
+        const userInfo = { email: currentUser.email };
+        axiosPublic.post("/jwt", userInfo).then((res) => {
+          if (res.data.token) {
+            localStorage.setItem("access-token", res.data.token);
           }
-        } else {
-          removeToken();
-        }
-
-        setUser(userData); // Update user state
-      } catch (error) {
-        console.error("Auth state error:", error);
-        removeToken();
-        setUser(null);
-        // Optionally show an error message to the user
-      } finally {
-        setLoading(false);
+        });
+      } else {
+        localStorage.removeItem("access-token");
       }
+      setLoading(false);
+    });
+
+    // Cleanup the listener on component unmount
+    return () => {
+      unsubscribe();
     };
+  }, [axiosPublic]);
 
-    checkUser();
-  }, []); // Run only on component mount
-
+  // Providing necessary functions and state to the app
   const authInfo = {
     user,
     loading,
+    setUser, // Allows manual user updates
+    createUser,
+    signIn,
+    googleSignIn,
     logOut,
+    updateUserProfile,
   };
 
   return (
-    <AuthContext.Provider value={authInfo}>
-      {loading ? <div className="spinner">Loading...</div> : children}
-    </AuthContext.Provider>
+    <AuthContext.Provider value={authInfo}>{children}</AuthContext.Provider>
   );
 };
 

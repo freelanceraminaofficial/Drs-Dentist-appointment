@@ -6,6 +6,7 @@ const BookingModal = ({
   dispatch,
   handleSubmit,
   onSubmit,
+  userEmail,
   register,
   errors,
 }) => {
@@ -14,7 +15,7 @@ const BookingModal = ({
   // Modify the onSubmit handler to include redirection
   const handleFormSubmit = (data) => {
     onSubmit(data); // Call the existing onSubmit logic
-    navigate("/dashboard/appointmenttable"); // Redirect to the desired route
+    navigate("/dashboard/appointments"); // Redirect to the desired route
   };
 
   return (
@@ -145,15 +146,9 @@ const BookingModal = ({
             <input
               type="email"
               id="email"
-              {...register("email", {
-                required: "Email is required",
-                pattern: {
-                  value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-                  message: "Invalid email address",
-                },
-              })}
-              placeholder="Enter your email"
-              className={`w-full p-2 border rounded-md ${
+              value={userEmail || ""}
+              readOnly
+              className={`w-full p-2 border rounded-md bg-gray-100 cursor-not-allowed ${
                 errors.email ? "border-red-500" : "border-gray-300"
               }`}
             />

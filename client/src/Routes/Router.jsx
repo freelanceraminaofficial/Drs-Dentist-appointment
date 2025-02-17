@@ -8,45 +8,77 @@ import DoctorProfile from "../Components/DoctorProfile/DoctorProfile";
 import Login from "../pages/Login/Login";
 import SignUp from "../pages/SignUp/SignUp";
 import PrivateRoutes from "../providers/PrivateRoute";
+import AllUsers from "../pages/AllUsers.jsx/AllUsers";
+import AddDoctorForm from "../Components/Dashboard/AddDoctorForm/AddDoctorForm";
+import ManageDoctors from "../Components/Dashboard/ManageDoctors/ManageDoctors";
+import AdminRoute from "../providers/AdminRoute";
 
 export const router = createBrowserRouter([
   {
     path: "/",
-    element: <Main></Main>,
+    element: <Main />,
     children: [
       {
         path: "/",
-        element: <Home></Home>,
+        element: <Home />,
       },
       {
         path: "appointment",
-        element: <Appointment></Appointment>,
+        element: <Appointment />,
       },
       {
         path: "/doctor/:id",
         element: (
           <PrivateRoutes>
-            <DoctorProfile></DoctorProfile>
+            <DoctorProfile />
           </PrivateRoutes>
         ),
       },
       {
         path: "login",
-        element: <Login></Login>,
+        element: <Login />,
       },
       {
         path: "signup",
-        element: <SignUp></SignUp>,
+        element: <SignUp />,
       },
     ],
   },
   {
     path: "/dashboard",
-    element: <Dashboard></Dashboard>,
+    element: (
+      <PrivateRoutes>
+        <Dashboard />
+      </PrivateRoutes>
+    ),
     children: [
       {
-        path: "appointmenttable",
-        element: <Appointments></Appointments>,
+        path: "/dashboard/appointments",
+        element: <Appointments />,
+      },
+      {
+        path: "/dashboard/users",
+        element: (
+          <AdminRoute>
+            <AllUsers />
+          </AdminRoute>
+        ),
+      },
+      {
+        path: "/dashboard/add-doctor",
+        element: (
+          <AdminRoute>
+            <AddDoctorForm />
+          </AdminRoute>
+        ),
+      },
+      {
+        path: "/dashboard/manage-doctors",
+        element: (
+          <AdminRoute>
+            <ManageDoctors />
+          </AdminRoute>
+        ),
       },
     ],
   },

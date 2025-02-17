@@ -1,31 +1,29 @@
-import React, { useState } from "react";
-import { Outlet, Link } from "react-router-dom";
+import React from "react";
+import { Outlet, NavLink } from "react-router-dom";
 import CustomCalendar from "../Components/CustomCalendar/CustomCalendar";
 import useAdmin from "../hooks/useAdmin";
 
 const Dashboard = () => {
-  // State to track the selected menu item
-  const [selectedMenu, setSelectedMenu] = useState(null);
-  const [isAdmin] = useAdmin();
-  // Menu items
-  const menuItems = isAdmin
-    ? [
-        { id: 5, name: "All Users", link: "/admin/users" }, // Admin route
-        { id: 6, name: "Add Doctors", link: "/admin/add-doctor" }, // Admin route
-        { id: 7, name: "Manage Doctors", link: "/admin/manage-doctors" }, // Admin route
-        { id: 4, name: "Home", link: "/" },
-      ]
-    : [
-        { id: 1, name: "My Appointments", link: "/dashboard" },
-        { id: 3, name: "My History", link: "/history" },
-        { id: 2, name: "My Reviews", link: "/reviews" },
-        { id: 4, name: "Home", link: "/" },
-      ];
+  const [isAdmin, isAdminLoading] = useAdmin(); // Ensure admin status loads correctly
 
-  // Handle menu item click
-  const handleMenuClick = (id) => {
-    setSelectedMenu(id);
-  };
+  if (isAdminLoading) {
+    return <p className="text-center text-lg font-semibold">Loading...</p>;
+  }
+
+  // Define menu items for admin and regular users
+  const adminMenu = [
+    { id: 5, name: "All Users", link: "/dashboard/users" },
+    { id: 6, name: "Add Doctors", link: "/dashboard/add-doctor" },
+    { id: 7, name: "Manage Doctors", link: "/dashboard/manage-doctors" },
+    { id: 4, name: "Home", link: "/" },
+  ];
+
+  const userMenu = [
+    { id: 1, name: "My Appointments", link: "/dashboard/appointments" },
+    { id: 3, name: "My History", link: "/dashboard/history" },
+    { id: 2, name: "My Reviews", link: "/dashboard/reviews" },
+    { id: 4, name: "Home", link: "/" },
+  ];
 
   return (
     <div className="flex h-screen">
@@ -34,29 +32,26 @@ const Dashboard = () => {
         <div className="p-4 border-b border-gray-700">
           <h1 className="text-2xl font-bold">Dashboard</h1>
         </div>
+
         <nav className="flex-1 p-4">
           <ul>
-            {menuItems.map((item) => (
-              <li
-                key={item.id}
-                className={`mb-2 p-3 rounded cursor-pointer ${
-                  selectedMenu === item.id
-                    ? "bg-gray-700"
-                    : "hover:bg-gray-700 transition-colors"
-                }`}
-              >
-                {/* Use React Router's Link for navigation */}
-                <Link
+            {(isAdmin ? adminMenu : userMenu).map((item) => (
+              <li key={item.id} className="mb-2">
+                <NavLink
                   to={item.link}
-                  onClick={() => handleMenuClick(item.id)}
-                  className="block"
+                  className={({ isActive }) =>
+                    `block p-3 rounded transition-colors ${
+                      isActive ? "bg-gray-700" : "hover:bg-gray-700"
+                    }`
+                  }
                 >
                   {item.name}
-                </Link>
+                </NavLink>
               </li>
             ))}
           </ul>
         </nav>
+
         <footer className="p-4 border-t border-gray-700">
           <p className="text-sm">© 2025 Dashboard</p>
         </footer>
@@ -67,10 +62,9 @@ const Dashboard = () => {
         <h2 className="text-3xl font-semibold mb-6">
           Welcome to the Dashboard
         </h2>
-        <CustomCalendar></CustomCalendar>
-
+        <CustomCalendar />
         <div className="text-gray-700">
-          <Outlet></Outlet>
+          <Outlet />
         </div>
       </main>
     </div>

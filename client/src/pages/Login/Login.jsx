@@ -6,16 +6,14 @@ import {
   LoadCanvasTemplate,
   validateCaptcha,
 } from "react-simple-captcha";
-import { AuthContext } from "../../providers/AuthProvider";
 import { ToastContainer, toast } from "react-toastify";
 import Swal from "sweetalert2";
 import "react-toastify/dist/ReactToastify.css";
-import useAxiosPublic from "../../hooks/useAxiosPublic";
+import useAuth from "../../hooks/useAuth";
 
 const Login = () => {
   const [disabled, setDisabled] = useState(true);
-  // const { signIn } = useContext(AuthContext);
-  const axiosPublic = useAxiosPublic();
+  const { signIn } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const [showPassword, setShowPassword] = useState(false);
@@ -30,107 +28,48 @@ const Login = () => {
     register,
     handleSubmit,
     formState: { errors },
+    setValue,
   } = useForm();
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
   };
 
-  // option: 1 for backend just for username and password
-  //   app.post('/login', async (req, res) => {
-  //   try {
-  //     const { identifier, password } = req.body; // Use 'identifier' to accept either email or username
-  //     let user;
+  const onSubmit = (data) => {
+    const { email, password, captcha } = data;
 
-  //     // Check if the identifier is an email or username
-  //     if (identifier.includes('@')) {
-  //       user = await userCollection.findOne({ email: identifier });
-  //     } else {
-  //       user = await userCollection.findOne({ username: identifier });
-  //     }
-
-  //     if (user && await bcrypt.compare(password, user.password)) {
-  //       // Generate a JWT token
-  //       const token = jwt.sign(
-  //         { username: user.username, email: user.email },
-  //         process.env.ACCESS_TOKEN_SECRET,
-  //         { expiresIn: '1hr' }
-  //       );
-
-  //       res.json({ message: 'Login successful', token });
-  //     } else {
-  //       res.status(401).json({ message: 'Invalid credentials' });
-  //     }
-  //   } catch (error) {
-  //     console.error('Login error:', error);
-  //     res.status(500).json({ message: 'Internal Server Error' });
-  //   }
-  // });
-  // option: 2 for backend just for email or username and password
-  const onSubmit = async (data) => {
-    try {
-      const response = await axiosPublic.post("/login", {
-        identifier: data.identifier, // This can be email or username
-        password: data.password,
-      });
-
-      Swal.fire({
-        position: "top-end",
-        icon: "success",
-        title: "Login successful",
-        showConfirmButton: false,
-        timer: 1500,
-      });
-
-      // Save token or handle successful login
-      console.log("Token:", response.data.token);
-      navigate("/"); // Adjust this route as needed
-    } catch (error) {
-      console.error("Login error:", error);
-
-      Swal.fire({
-        icon: "error",
-        title: "Login Failed",
-        text:
-          error.response?.data?.message ||
-          "An error occurred. Please try again.",
-      });
+    if (!validateCaptcha(captcha)) {
+      toast.error("Captcha validation failed. Please try again.");
+      return;
     }
+
+    signIn(email, password)
+      .then((result) => {
+        const user = result.user;
+        console.log(user);
+
+        Swal.fire({
+          title: "User Login Successful.",
+          showClass: {
+            popup: "animate__animated animate__fadeInDown",
+          },
+          hideClass: {
+            popup: "animate__animated animate__fadeOutUp",
+          },
+        });
+
+        navigate(formPath, { replace: true });
+      })
+      .catch((error) => {
+        console.error("Login error:", error);
+        toast.error("Login failed. Please check your credentials.");
+      });
   };
-
-  // option: 2 for firebase
-  // const onSubmit = (data) => {
-  //   const { email, password } = data;
-
-  //   signIn(email, password)
-  //     .then((result) => {
-  //       const user = result.user;
-  //       console.log(user);
-
-  //       // Display success message using Swal
-  //       Swal.fire({
-  //         title: "User Login Successful.",
-  //         showClass: {
-  //           popup: "animate__animated animate__fadeInDown",
-  //         },
-  //         hideClass: {
-  //           popup: "animate__animated animate__fadeOutUp",
-  //         },
-  //       });
-
-  //       navigate(form, { replace: true });
-  //     })
-  //     .catch((error) => {
-  //       console.error("Login error:", error);
-
-  //       // Display error notification using Toastify
-  //       toast.error("Login failed. Please check your credentials.");
-  //     });
-  // };
 
   const handleValidateCaptcha = (e) => {
     const user_captcha_value = e.target.value;
     setDisabled(!validateCaptcha(user_captcha_value));
+    setValue("captcha", user_captcha_value);
   };
 
   return (
@@ -141,7 +80,7 @@ const Login = () => {
       <div className="w-1/2 bg-[#07332F] flex items-center justify-center">
         <div className="text-center">
           <img
-            src="https://i.ibb.co.com/TcBJTFm/Screenshot-10.png"
+            src="https://i.ibb.co/TcBJTFm/Screenshot-10.png"
             alt="Doctor Illustration"
             className="w-full mx-auto"
           />
@@ -156,25 +95,24 @@ const Login = () => {
           </h1>
 
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-            {/* Username/Email Field */}
+            {/* Email Field */}
             <div className="form-control w-full">
               <label className="label">
-                <span className="label-text">Email or Username</span>
+                <span className="label-text">Email</span>
               </label>
               <input
-                type="text"
-                name="identifier"
-                placeholder="Enter your email or username"
-                {...register("identifier", {
-                  required: "Email or Username is required",
+                type="email"
+                placeholder="Enter your email"
+                {...register("email", {
+                  required: "Email is required",
                 })}
                 className={`input input-bordered w-full ${
-                  errors.identifier ? "input-error" : ""
+                  errors.email ? "input-error" : ""
                 }`}
               />
-              {errors.identifier && (
+              {errors.email && (
                 <span className="text-red-500 text-sm mt-1">
-                  {errors.identifier.message}
+                  {errors.email.message}
                 </span>
               )}
             </div>
@@ -216,11 +154,10 @@ const Login = () => {
                 <LoadCanvasTemplate />
               </label>
               <input
-                onBlur={handleValidateCaptcha}
                 type="text"
-                name="captcha"
                 placeholder="Type the captcha above"
                 className="input input-bordered"
+                onBlur={handleValidateCaptcha}
               />
             </div>
 

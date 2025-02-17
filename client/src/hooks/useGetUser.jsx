@@ -1,33 +1,30 @@
-import useAxiosPublic from "./useAxiosPublic";
 import { useQuery } from "@tanstack/react-query";
 import { useContext } from "react";
 import { AuthContext } from "../providers/AuthProvider";
+import useAxiosPublic from "./useAxiosPublic";
 
 const useGetUser = () => {
-  const axiosSecure = useAxiosPublic();
+  const axiosPublic = useAxiosPublic();
   const { user } = useContext(AuthContext);
 
-  // useQuery hook to fetch user data
+  // Only run the query if user.email is available
   const {
-    data: userData = [], // Default to an empty array if no data
+    data: userData = null,
     refetch,
-    isPending,
+    isLoading,
     isError,
-    error,
+    error = "An error occurred while fetching user data.",
   } = useQuery({
-    queryKey: ["userData", user?.email], // Unique key for this query
+    queryKey: ["userData", user?.email],
     queryFn: async () => {
-      try {
-        const res = await axiosSecure.get(`/user?email=${user?.email}`); // API call to fetch user data
-        return res.data;
-      } catch (error) {
-        console.error("Error fetching user data:", error);
-        throw error;
-      }
+      if (!user?.email) return null;
+      const res = await axiosPublic.get(`/user?email=${user?.email}`);
+      return res.data;
     },
+    enabled: !!user?.email,
   });
 
-  return [userData, refetch, isPending, isError, error];
+  return { userData, refetch, isLoading, isError, error }; // Return an object here
 };
 
 export default useGetUser;

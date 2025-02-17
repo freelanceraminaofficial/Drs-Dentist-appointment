@@ -1,11 +1,11 @@
-import React from "react";
 import useAppoint from "../../../hooks/useAppoint";
 import { FaTrashAlt } from "react-icons/fa";
-import useAxiosSecure from "../../../hooks/useAxiosSecure";
 import Swal from "sweetalert2";
+import useAxiosSecure from "../../../hooks/useAxiosSecure";
 
 const Appointments = () => {
   const [appointment, refetch] = useAppoint();
+
   const axiosSecure = useAxiosSecure();
 
   const handleDelete = (id) => {

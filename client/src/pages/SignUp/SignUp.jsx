@@ -2,47 +2,80 @@ import React, { useContext, useState } from "react";
 import { useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
+
 import useAxiosPublic from "../../hooks/useAxiosPublic";
-import { AuthContext } from "../../providers/AuthProvider";
+import useGetUser from "../../hooks/useGetUser"; // Import useGetUser correctly
+import useAuth from "../../hooks/useAuth";
 
 const Signup = () => {
+  const { createUser, updateUserProfile, setUser } = useAuth(); // Destructure setUser from AuthContext
+  const navigate = useNavigate();
+  const [showPassword, setShowPassword] = useState(false);
   const axiosPublic = useAxiosPublic();
+
   const {
     register,
     handleSubmit,
     reset,
     formState: { errors },
   } = useForm();
-  const { createUser, updateUserProfile } = useContext(AuthContext);
-  const navigate = useNavigate();
-  const [showPassword, setShowPassword] = useState(false);
+
+  // Destructure the object returned by useGetUser
+  const { userData, refetch } = useGetUser(); // Correctly destructure `userData` and `refetch`
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
   };
 
   const onSubmit = async (data) => {
-    // Option 1: Use Server Route `/register`
     try {
-      const response = await axiosPublic.post("/register", {
-        username: data.username,
-        email: data.email,
-        password: data.password,
+      // Create user with Firebase
+      const result = await createUser(data.email, data.password);
+      const user = result.user;
+
+      // Update user profile only with `photoURL`
+      await updateUserProfile(data.name, data.photoURL);
+
+      // Manually update the `AuthContext` state to include `username`
+      setUser({
+        ...user,
+        username: data.username, // Add the username manually
         photoURL: data.photoURL,
       });
 
-      if (response.status === 201) {
-        reset();
-        Swal.fire({
-          position: "top-end",
-          icon: "success",
-          title: "User Created Successfully",
-          showConfirmButton: false,
-          timer: 1500,
-        });
-        navigate("/");
-      }
+      // Refetch user data after creating the user
+      refetch(); // Refetch the user data from useGetUser
+
+      // Prepare user data for backend or local storage
+      const userInfo = {
+        name: data.name,
+        email: data.email,
+        username: data.username,
+        photoURL: data.photoURL,
+      };
+
+      // Save user data in localStorage
+      localStorage.setItem("user", JSON.stringify(userInfo));
+
+      // Optional: Send user data to your backend
+      await axiosPublic.post("/users", userInfo);
+
+      // Clear the form
+      reset();
+
+      // Show success alert
+      Swal.fire({
+        position: "top-end",
+        icon: "success",
+        title: "User Created Successfully",
+        showConfirmButton: false,
+        timer: 1500,
+      });
+
+      // Redirect to home page or desired route
+      navigate("/");
     } catch (error) {
+      // Show error alert
       Swal.fire({
         icon: "error",
         title: "Oops...",
@@ -50,44 +83,11 @@ const Signup = () => {
       });
       console.error("Error:", error);
     }
-
-    // Option 2: Use Firebase
-    // try {
-    //   const result = await createUser(data.email, data.password);
-    //   const user = result.user;
-    //   await updateUserProfile(data.name, data.photoURL);
-
-    //   const userInfo = {
-    //     name: data.name,
-    //     email: data.email,
-    //     username: data.username,
-    //     photoURL: data.photoURL,
-    //   };
-    //   const res = await axiosPublic.post("/users", userInfo);
-
-    //   if (res.data.insertedId) {
-    //     reset();
-    //     Swal.fire({
-    //       position: "top-end",
-    //       icon: "success",
-    //       title: "User Created Successfully",
-    //       showConfirmButton: false,
-    //       timer: 1500,
-    //     });
-    //     navigate("/");
-    //   }
-    // } catch (error) {
-    //   Swal.fire({
-    //     icon: "error",
-    //     title: "Oops...",
-    //     text: "Failed to create user. Please try again!",
-    //   });
-    //   console.error("Error:", error);
-    // }
   };
 
   return (
     <div className="flex h-screen">
+      {/* Left Panel with Image */}
       <div className="w-1/2 bg-[#07332F] flex items-center justify-center">
         <div className="text-center">
           <img
@@ -97,12 +97,15 @@ const Signup = () => {
           />
         </div>
       </div>
+
+      {/* Right Panel with Form */}
       <div className="w-1/2 flex items-center justify-center bg-gray-50">
         <div className="w-full max-w-md p-8 bg-white rounded-lg shadow-lg">
           <h1 className="text-2xl font-bold text-center mb-6">
             Sign Up to Doc House
           </h1>
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+            {/* Name Input */}
             <div className="form-control w-full">
               <label className="label">
                 <span className="label-text">Name</span>
@@ -113,7 +116,7 @@ const Signup = () => {
                   required: "Name is required",
                   validate: (value) =>
                     /^[A-Z][a-z]*\s[A-Z][a-z]*$/.test(value) ||
-                    "Name must be Proper Case format.",
+                    "Name must be in Proper Case format.",
                 })}
                 className={`input input-bordered w-full ${
                   errors.name ? "input-error" : ""
@@ -125,6 +128,8 @@ const Signup = () => {
                 </span>
               )}
             </div>
+
+            {/* Username Input */}
             <div className="form-control w-full">
               <label className="label">
                 <span className="label-text">Username</span>
@@ -147,6 +152,8 @@ const Signup = () => {
                 </span>
               )}
             </div>
+
+            {/* Photo URL Input */}
             <div className="form-control w-full">
               <label className="label">
                 <span className="label-text">Photo URL</span>
@@ -168,6 +175,8 @@ const Signup = () => {
                 </span>
               )}
             </div>
+
+            {/* Email Input */}
             <div className="form-control w-full">
               <label className="label">
                 <span className="label-text">Email</span>
@@ -191,6 +200,8 @@ const Signup = () => {
                 </span>
               )}
             </div>
+
+            {/* Password Input */}
             <div className="form-control w-full">
               <label className="label">
                 <span className="label-text">Password</span>
@@ -228,6 +239,8 @@ const Signup = () => {
                 </span>
               )}
             </div>
+
+            {/* Submit Button */}
             <button type="submit" className="btn btn-primary w-full mt-4">
               Create Account
             </button>
